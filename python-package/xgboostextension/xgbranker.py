@@ -22,9 +22,47 @@ class XGBRanker(XGBModel):
 
     def fit(self, X, y, group=None, eval_metric=None, sample_weight=None,
             early_stopping_rounds=None, verbose=True):
-        print "type(X)=", type(X)
-        print "tpe(y)=", type(y)
-        
+        """
+        Fit the gradient boosting model
+
+        Parameters
+        ----------
+        X : array_like
+            Feature matrix
+        y : array_like
+            Labels
+        group : list, optional
+            Group number list. All X and y will be taken as single group when group is not provided. All ranking is valid only in their own group.
+        sample_weight : array_like
+            instance weights
+        eval_set : list, optional
+            A list of (X, y) tuple pairs to use as a validation set for
+            early-stopping
+        eval_metric : str, callable, optional
+            If a str, should be a built-in evaluation metric to use. See
+            doc/parameter.md. If callable, a custom evaluation metric. The call
+            signature is func(y_predicted, y_true) where y_true will be a
+            DMatrix object such that you may need to call the get_label
+            method. It must return a str, value pair where the str is a name
+            for the evaluation and value is the value of the evaluation
+            function. This objective is always minimized.
+        early_stopping_rounds : int
+            Activates early stopping. Validation error needs to decrease at
+            least every <early_stopping_rounds> round(s) to continue training.
+            Requires at least one item in evals.  If there's more than one,
+            will use the last. Returns the model from the last iteration
+            (not the best one). If early stopping occurs, the model will
+            have three additional fields: bst.best_score, bst.best_iteration
+            and bst.best_ntree_limit.
+            (Use bst.best_ntree_limit to get the correct value if num_parallel_tree
+            and/or num_class appears in the parameters)
+        verbose : bool
+            If `verbose` and an evaluation set is used, writes the evaluation
+            metric measured on the validation set to stderr.
+        xgb_model : str
+            file name of stored xgb model or 'Booster' instance Xgb model to be
+            loaded before training (allows training continuation).
+        """
         if group == None:
             group = [X.shape[0]]
         
@@ -55,7 +93,6 @@ class XGBRanker(XGBModel):
         
         self.objective = params["objective"]
 
-        print('params='+str(params))
         self._Booster = train(params, train_dmatrix, 
                               self.n_estimators,
                               early_stopping_rounds=early_stopping_rounds,
@@ -87,20 +124,4 @@ class XGBRanker(XGBModel):
                                                  ntree_limit=ntree_limit)
         return rank_values
 
-    def fit_per_group(self, X_group, y, sample_weight=None,
-            #, eval_set=None, eval_metric=None,
-            early_stopping_rounds=None, verbose=True, xgb_model=None
-           ):
-        X = reduce(X_group, lambda x,y: x+y)
-        group = map(X_group, lambda x: len(x))
-        return self.fit(X, y, group, sample_weight=sample_weight, early_stopping_rounds=early_stopping_rounds, verbose=verbose, xgb_model=xgb_model)
     
-    def predict_per_group(self, X, group, output_margin=False, ntree_limit=0):
-        rank_values = self.predict(X, group, output_margin=output_margin, ntree_limit=ntree_limit)
-        rank_values_group = []
-        tmp_rank_values = rank_values
-        for size in group:
-            rank_values_group.append(tmp_rank_values[:size][:])
-            tmp_rank_values = tmp_rank_values[size:]
-        return rank_values_group
-

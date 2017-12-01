@@ -1,8 +1,8 @@
 import numpy as np
 
 import sys
-sys.path.append('../xgboost-extension/')
-from xgbranker import XGBRanker
+sys.path.append('..')
+from xgboostextension import XGBRanker
 
 case_num = 100
 X = np.random.rand(case_num, 4)
@@ -15,7 +15,6 @@ ranker = XGBRanker(n_estimators=150, learning_rate=0.1, subsample=0.9)
 ranker.fit(X, y, [25, 25, 25, 25], eval_metric=['ndcg', 'map@5-'])
 y_predict = ranker.predict(X, [25, 25, 25, 25])
 
-print "real:", y
 print "predict:", y_predict
-print type(y_predict)
+print "type(y_predict):", type(y_predict)
 
