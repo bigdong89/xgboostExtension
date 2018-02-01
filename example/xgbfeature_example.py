@@ -1,6 +1,4 @@
 import numpy as np
-import sys
-sys.path.append('..')
 from xgboostextension import XGBFeature
 
 X = np.random.rand(40, 4)
