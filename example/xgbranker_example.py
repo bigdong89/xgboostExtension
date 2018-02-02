@@ -1,7 +1,4 @@
 import numpy as np
-
-import sys
-sys.path.append('..')
 from xgboostextension import XGBRanker
 
 case_num = 100
