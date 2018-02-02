@@ -6,7 +6,6 @@ setup(
     packages=['xgboostextension'],
     author='bigdong89',
     author_email='dongjiaquan89@gmail.com',
-    maintainer='FlorisHoogenboom',
     url='https://github.com/bigdong89/xgboostExtension',
     license='Apache 2.0',
     description='XGBoost Extension for Easy Ranking & TreeFeature.',
