@@ -7,17 +7,18 @@ class XGBRanker(XGBModel):
            """ + '\n'.join(XGBModel.__doc__.split('\n')[2:])
     
     def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100, 
-                 silent=True, objective="rank:pairwise",
-                 nthread=-1, gamma=0, min_child_weight=1, max_delta_step=0,
+                 silent=True, objective="rank:pairwise", booster='gbtree',
+                 n_jobs=-1, nthread=None, gamma=0, min_child_weight=1, max_delta_step=0,
                  subsample=1, colsample_bytree=1, colsample_bylevel=1,
                  reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
-                 base_score=0.5, seed=0, missing=None): 
+                 base_score=0.5, random_state=0, seed=None, missing=None, **kwargs): 
+        
         super(XGBRanker, self).__init__(max_depth, learning_rate,
-                                        n_estimators, silent, objective,
-                                        nthread, gamma, min_child_weight, max_delta_step, 
+                                        n_estimators, silent, objective, booster,
+                                        n_jobs, nthread, gamma, min_child_weight, max_delta_step, 
                                         subsample, colsample_bytree, colsample_bylevel,
                                         reg_alpha, reg_lambda, scale_pos_weight,
-                                        base_score, seed, missing)
+                                        base_score, random_state, seed, missing)
 
 
     def fit(self, X, y, group=None, eval_metric=None, sample_weight=None,
@@ -63,7 +64,7 @@ class XGBRanker(XGBModel):
             file name of stored xgb model or 'Booster' instance Xgb model to be
             loaded before training (allows training continuation).
         """
-        if group == None:
+        if group is None:
             group = [X.shape[0]]
         
         params = self.get_xgb_params()
@@ -119,7 +120,7 @@ class XGBRanker(XGBModel):
             group = [X.shape[0]]
         test_dmatrix = DMatrix(X, missing=self.missing)
         test_dmatrix.set_group(group)
-        rank_values = self.booster().predict(test_dmatrix,
+        rank_values = self.get_booster().predict(test_dmatrix,
                                                  output_margin=output_margin,
                                                  ntree_limit=ntree_limit)
         return rank_values
