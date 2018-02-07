@@ -4,8 +4,8 @@ from xgboostextension import XGBRanker
 case_num = 100
 X = np.random.rand(case_num, 4)
 y = np.random.randint(5, size=case_num)
-print "X=", X
-print "y=", y
+print("X="+str(X))
+print("y="+str(y))
 
 # objective = rank:pairwise(default).
 # Although rank:ndcg is also available,  rank:ndcg(listwise) is much worse than pairwise.
@@ -15,6 +15,6 @@ ranker = XGBRanker(n_estimators=150, learning_rate=0.1, subsample=0.9)#, objecti
 ranker.fit(X, y, [25, 25, 25, 25], eval_metric=['ndcg', 'map@5-'])
 y_predict = ranker.predict(X, [25, 25, 25, 25])
 
-print "predict:", y_predict
-print "type(y_predict):", type(y_predict)
+print("predict:"+str(y_predict))
+print("type(y_predict):"+type(y_predict))
 
