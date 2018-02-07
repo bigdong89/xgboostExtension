@@ -1,6 +1,8 @@
 # xgboostExtension
 xgboost Extension for Easy Ranking &amp; Leaf Index Feature
 
+
+Pypi package: [XGBoost-Ranking](https://pypi.python.org/pypi/XGBoost-Ranking/)
 Related xgboost issue: [Add Python Interface: XGBRanker and XGBFeature#2859](https://github.com/dmlc/xgboost/issues/2859)
 
 As we know, Xgboost offers interfaces to support Ranking and get TreeNode Feature.
@@ -19,3 +21,6 @@ For Python Package:
 
 
 The version of XGBoostExtension always follow the version of compatible xgboost.
+For example:
+    XGBoostExtension-0.6 can always work with XGBoost-0.6
+But xgboostExtension-0.6 may not work with XGBoost-0.7
