@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='XGBoost-Ranking',
-    version='0.6.1',
+    version='0.7.0',
     packages=['xgboostextension'],
     author='bigdong89',
     author_email='dongjiaquan89@gmail.com',
@@ -10,7 +10,7 @@ setup(
     license='Apache 2.0',
     description='XGBoost Extension for Easy Ranking & TreeFeature.',
     install_requires=[
-        'xgboost'
+        'xgboost>=0.7'
     ],
     setup_requires=[]
 )
