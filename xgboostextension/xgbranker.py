@@ -116,16 +116,7 @@ class XGBRanker(XGBModel):
         return self
 
     def predict(self, X, output_margin=False, ntree_limit=0):
-        X = check_array(X, accept_sparse=False)
-
-        group_labels = X[:,0]
-        group_indices = group_labels.argsort()
-        X = X[group_indices, 1:]
-
-        # Rearrange the labels to be sure of the order and
-        # calculate the group sizes
-        group_labels = group_labels[group_indices]
-        _, sizes = np.unique(group_labels, return_counts=True)
+        sizes, X, _, _ = _preprare_data_in_groups(X)
 
         test_dmatrix = DMatrix(X, missing=self.missing)
         test_dmatrix.set_group(sizes)
