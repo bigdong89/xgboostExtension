@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import sparse
 
 
 def _preprare_data_in_groups(X, y=None, sample_weights=None):
@@ -24,7 +25,11 @@ def _preprare_data_in_groups(X, y=None, sample_weights=None):
 
     sample_weights: (None or 1d-array) sample weights sorted per group
     """
-    group_labels = X[:,0]
+    if sparse.issparse(X):
+        group_labels = X.getcol(0).toarray()[:,0]
+    else:
+        group_labels = X[:,0]
+
     group_indices = group_labels.argsort()
 
     group_labels = group_labels[group_indices]
