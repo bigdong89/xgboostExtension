@@ -57,19 +57,18 @@ def ndcg_at_k(r, k, method=0):
     return dcg_at_k(r, k, method) / dcg_max
 
 
-def ndcg(k):
-    """
-    Wrapper to make a closure to transform ndcg_at_k into a metric
+class ndcg:
+    def __init__(self, k):
+        """
+        Simple wrapper class to make a true metric from ndcg_at_k,
+        i.e. a callable only accepting one argument. A simple closure
+        cannot be used for this purpose since that cannot be pickled.
 
-    Parameters
-    ----------
-    k : (int) the order up to which to evaluate ndcg
+        Parameters
+        ----------
+        k : (int) order of ndcg to use
+        """
+        self.k = k
 
-    Returns
-    -------
-    ndcg_at_k : (callable) metric that calculated the ndcg up till k
-    """
-    def inner(r):
-        return ndcg_at_k(r, k)
-
-    return inner
+    def __call__(self, r):
+        ndcg_at_k(r, self.k)
