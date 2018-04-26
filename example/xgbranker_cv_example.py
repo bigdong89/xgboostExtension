@@ -43,13 +43,14 @@ grid_search = GridSearchCV(
     },
     cv=GroupKFold(3),
     scoring=_RankingScorer(ndcg(3)),
-    verbose=100
+    verbose=100,
+    n_jobs=4
 )
 
 
+if __name__ == '__main__':
+    grid_search.fit(X, y, groups=X_groups)
 
-grid_search.fit(X, y, groups=X_groups)
-
-print("Cross validation results:")
-print(grid_search.cv_results_)
+    print("Cross validation results:")
+    print(grid_search.cv_results_)
 
