@@ -1,6 +1,10 @@
-import xgboost
-from xgboost import XGBModel
+import numpy as np
+from sklearn.utils import check_X_y, check_array
 from xgboost import DMatrix, train
+from xgboost import XGBModel
+from xgboost.sklearn import _objective_decorator
+from xgboostextension.util import _preprare_data_in_groups
+
 
 class XGBRanker(XGBModel):
     __doc__ = """Implementation of sklearn API for XGBoost Ranking
@@ -20,20 +24,17 @@ class XGBRanker(XGBModel):
                                         reg_alpha, reg_lambda, scale_pos_weight,
                                         base_score, random_state, seed, missing)
 
-
-    def fit(self, X, y, group=None, eval_metric=None, sample_weight=None,
-            early_stopping_rounds=None, verbose=True):
+    def fit(self, X, y, sample_weight=None, eval_set=None, eval_metric=None,
+            early_stopping_rounds=None, verbose=True, xgb_model=None):
         """
         Fit the gradient boosting model
 
         Parameters
         ----------
         X : array_like
-            Feature matrix
+            Feature matrix with the first feature containing a group indicator
         y : array_like
             Labels
-        group : list, optional
-            Group number list. All X and y will be taken as single group when group is not provided. All ranking is valid only in their own group.
         sample_weight : array_like
             instance weights
         eval_set : list, optional
@@ -64,18 +65,20 @@ class XGBRanker(XGBModel):
             file name of stored xgb model or 'Booster' instance Xgb model to be
             loaded before training (allows training continuation).
         """
-        if group is None:
-            group = [X.shape[0]]
-        
+
+        X, y = check_X_y(X, y, accept_sparse=False, y_numeric=True)
+
+        sizes, X, y, _ = _preprare_data_in_groups(X, y)
+
         params = self.get_xgb_params()
- 
+
         if callable(self.objective):
             obj = _objective_decorator(self.objective)
-            # Use default value. Is it really not used ?
-            xgb_options["objective"] = "rank:pairwise"
+            # Dummy, Not used when custom objective is given
+            params["objective"] = "binary:logistic"
         else:
             obj = None
-        
+
         evals_result = {}
         feval = eval_metric if callable(eval_metric) else None
         if eval_metric is not None:
@@ -90,18 +93,15 @@ class XGBRanker(XGBModel):
         else:
             train_dmatrix = DMatrix(X, label=y,
                                     missing=self.missing)
-        train_dmatrix.set_group(group)
-        
-        self.objective = params["objective"]
+
+        train_dmatrix.set_group(sizes)
 
         self._Booster = train(params, train_dmatrix, 
                               self.n_estimators,
                               early_stopping_rounds=early_stopping_rounds,
                               evals_result=evals_result, obj=obj, feval=feval,
-                              verbose_eval=verbose,
-                              xgb_model=None)
+                              verbose_eval=verbose, xgb_model=xgb_model)
 
-        
         if evals_result:
             for val in evals_result.items():
                 evals_result_key = list(val[1].keys())[0]
@@ -115,11 +115,11 @@ class XGBRanker(XGBModel):
 
         return self
 
-    def predict(self, X, group=None, output_margin=False, ntree_limit=0):
-        if group == None:
-            group = [X.shape[0]]
+    def predict(self, X, output_margin=False, ntree_limit=0):
+        sizes, X, _, _ = _preprare_data_in_groups(X)
+
         test_dmatrix = DMatrix(X, missing=self.missing)
-        test_dmatrix.set_group(group)
+        test_dmatrix.set_group(sizes)
         rank_values = self.get_booster().predict(test_dmatrix,
                                                  output_margin=output_margin,
                                                  ntree_limit=ntree_limit)
