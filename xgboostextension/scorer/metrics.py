@@ -24,9 +24,11 @@ def dcg_at_k(r, k, method=0):
         padding = k - r.shape[0]
         r = np.pad(r, (0, padding), 'constant', constant_values=0)
 
+    # Only consider k elements
+    r = r[:k]
     if r.size:
         if method == 0:
-            return r[0] + np.sum(r[1:] / np.log2(np.arange(2, r.size + 1)))
+            return np.sum((np.power(2, r) - 1) / np.log2(np.arange(2, r.size + 2)))
         elif method == 1:
             return np.sum(r / np.log2(np.arange(2, r.size + 2)))
         else:
