@@ -1,9 +1,8 @@
-import numpy as np
-from sklearn.utils import check_X_y, check_array
 from xgboost import DMatrix, train
 from xgboost import XGBModel
 from xgboost.sklearn import _objective_decorator
 from xgboostextension.util import _preprare_data_in_groups
+from sklearn.utils import check_X_y, check_array
 
 
 class XGBRanker(XGBModel):
@@ -66,9 +65,9 @@ class XGBRanker(XGBModel):
             loaded before training (allows training continuation).
         """
 
-        X, y = check_X_y(X, y, accept_sparse=False, y_numeric=True)
-
         sizes, _, X_features, y, _ = _preprare_data_in_groups(X, y)
+
+        X_features, y = check_X_y(X_features, y, accept_sparse=True, y_numeric=True)
 
         params = self.get_xgb_params()
 
@@ -116,10 +115,9 @@ class XGBRanker(XGBModel):
         return self
 
     def predict(self, X, output_margin=False, ntree_limit=0):
-        sizes, _, X_features, _, _ = _preprare_data_in_groups(X)
+        X = check_array(X, accept_sparse=True)
 
-        test_dmatrix = DMatrix(X_features, missing=self.missing)
-        test_dmatrix.set_group(sizes)
+        test_dmatrix = DMatrix(X[:,1:], missing=self.missing)
         rank_values = self.get_booster().predict(test_dmatrix,
                                                  output_margin=output_margin,
                                                  ntree_limit=ntree_limit)
