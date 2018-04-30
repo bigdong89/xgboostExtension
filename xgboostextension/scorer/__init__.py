@@ -25,9 +25,23 @@ class _RankingScorer(_BaseScorer):
             None
         )
 
+        self._ungrouped_score_func = score_func
+
     def __call__(self, estimator, X, y, sample_weight=None):
         sizes, X_sorted, _, y_sorted, _ = _preprare_data_in_groups(X, y)
 
         y_predicted = estimator.predict(X_sorted)
 
         return self._sign * self._score_func(sizes, y_sorted, y_predicted)
+
+    def __repr__(self):
+        if hasattr(self._ungrouped_score_func, '__name__'):
+            return "RankingScorer({0})".format(
+                self._ungrouped_score_func.__name__
+            )
+        elif hasattr(self._ungrouped_score_func, '__class__'):
+            return "RankingScorer({0})".format(
+                self._ungrouped_score_func.__class__.__name__
+            )
+        else:
+            return "RankingScorer({0})".format('unkown')
