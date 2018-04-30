@@ -71,4 +71,4 @@ class ndcg:
         self.k = k
 
     def __call__(self, r):
-        ndcg_at_k(r, self.k)
+        return ndcg_at_k(r, self.k)

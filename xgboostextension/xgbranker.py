@@ -68,7 +68,7 @@ class XGBRanker(XGBModel):
 
         X, y = check_X_y(X, y, accept_sparse=False, y_numeric=True)
 
-        sizes, X, y, _ = _preprare_data_in_groups(X, y)
+        sizes, _, X_features, y, _ = _preprare_data_in_groups(X, y)
 
         params = self.get_xgb_params()
 
@@ -88,10 +88,10 @@ class XGBRanker(XGBModel):
                 params.update({'eval_metric': eval_metric})
 
         if sample_weight is not None:
-            train_dmatrix = DMatrix(X, label=y, weight=sample_weight,
+            train_dmatrix = DMatrix(X_features, label=y, weight=sample_weight,
                                     missing=self.missing)
         else:
-            train_dmatrix = DMatrix(X, label=y,
+            train_dmatrix = DMatrix(X_features, label=y,
                                     missing=self.missing)
 
         train_dmatrix.set_group(sizes)
@@ -116,9 +116,9 @@ class XGBRanker(XGBModel):
         return self
 
     def predict(self, X, output_margin=False, ntree_limit=0):
-        sizes, X, _, _ = _preprare_data_in_groups(X)
+        sizes, _, X_features, _, _ = _preprare_data_in_groups(X)
 
-        test_dmatrix = DMatrix(X, missing=self.missing)
+        test_dmatrix = DMatrix(X_features, missing=self.missing)
         test_dmatrix.set_group(sizes)
         rank_values = self.get_booster().predict(test_dmatrix,
                                                  output_margin=output_margin,
