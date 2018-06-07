@@ -3,7 +3,7 @@ from xgboostextension.xgbranker import XGBRanker, _preprare_data_in_groups
 from xgboostextension.scorer.util import _make_grouped_metric
 
 
-class _RankingScorer(_BaseScorer):
+class RankingScorer(_BaseScorer):
     def __init__(self, score_func, sign=1):
         """
         Base class for applying scoring functions to ranking problems.
@@ -19,7 +19,7 @@ class _RankingScorer(_BaseScorer):
                 'Only score functions included with this package are supported'
             )
 
-        super(_RankingScorer, self).__init__(
+        super(RankingScorer, self).__init__(
             _make_grouped_metric(score_func),
             sign,
             {}

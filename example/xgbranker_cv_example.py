@@ -7,7 +7,7 @@ cross validation to find the optimal parameters.
 
 import numpy as np
 from xgboostextension import XGBRanker
-from xgboostextension.scorer import _RankingScorer
+from xgboostextension.scorer import RankingScorer
 from xgboostextension.scorer.metrics import ndcg
 from sklearn.model_selection import GridSearchCV, GroupKFold
 
@@ -42,7 +42,7 @@ grid_search = GridSearchCV(
         'max_depth': [1,3,10]
     },
     cv=GroupKFold(3),
-    scoring=_RankingScorer(ndcg(3)),
+    scoring=RankingScorer(ndcg(3)),
     verbose=100,
     n_jobs=4
 )
