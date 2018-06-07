@@ -22,7 +22,7 @@ class _RankingScorer(_BaseScorer):
         super(_RankingScorer, self).__init__(
             _make_grouped_metric(score_func),
             sign,
-            None
+            {}
         )
 
         self._ungrouped_score_func = score_func
