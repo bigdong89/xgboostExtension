@@ -3,7 +3,7 @@ from xgboostextension.xgbranker import XGBRanker, _preprare_data_in_groups
 from xgboostextension.scorer.util import _make_grouped_metric
 
 
-class _RankingScorer(_BaseScorer):
+class RankingScorer(_BaseScorer):
     def __init__(self, score_func, sign=1):
         """
         Base class for applying scoring functions to ranking problems.
@@ -19,21 +19,29 @@ class _RankingScorer(_BaseScorer):
                 'Only score functions included with this package are supported'
             )
 
-        super(_RankingScorer, self).__init__(
+        super(RankingScorer, self).__init__(
             _make_grouped_metric(score_func),
             sign,
-            None
+            {}
         )
 
+        self._ungrouped_score_func = score_func
+
     def __call__(self, estimator, X, y, sample_weight=None):
-        if not isinstance(estimator, XGBRanker):
-            raise NotImplementedError((
-                'Currently only scoring for the'
-                'XGBRanker model is supported.'
-            ))
+        sizes, X_sorted, _, y_sorted, _ = _preprare_data_in_groups(X, y)
 
-        sizes, _, y_sorted, _ = _preprare_data_in_groups(X, y)
-
-        y_predicted = estimator.predict(X)
+        y_predicted = estimator.predict(X_sorted)
 
         return self._sign * self._score_func(sizes, y_sorted, y_predicted)
+
+    def __repr__(self):
+        if hasattr(self._ungrouped_score_func, '__name__'):
+            return "RankingScorer({0})".format(
+                self._ungrouped_score_func.__name__
+            )
+        elif hasattr(self._ungrouped_score_func, '__class__'):
+            return "RankingScorer({0})".format(
+                self._ungrouped_score_func.__class__.__name__
+            )
+        else:
+            return "RankingScorer({0})".format('unkown')

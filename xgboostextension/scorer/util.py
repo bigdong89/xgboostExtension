@@ -26,7 +26,7 @@ class _make_grouped_metric:
         for i, (r, pred) in enumerate(
                 zip(y_sorted_split, y_predicted_split)
         ):
-            indices = np.argsort(pred)[::-1]
+            indices = np.lexsort((r, pred))[::-1]
             results[i] = self._metric(r[indices])
 
         # Return the average over all statistics

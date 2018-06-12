@@ -34,7 +34,8 @@ def _preprare_data_in_groups(X, y=None, sample_weights=None):
 
     group_labels = group_labels[group_indices]
     _, sizes = np.unique(group_labels, return_counts=True)
-    X = X[group_indices, 1:]
+    X_sorted = X[group_indices]
+    X_features = X_sorted[:, 1:]
 
     if y is not None:
         y = y[group_indices]
@@ -42,4 +43,4 @@ def _preprare_data_in_groups(X, y=None, sample_weights=None):
     if sample_weights is not None:
         sample_weights = sample_weights[group_indices]
 
-    return sizes, X, y, sample_weights
+    return sizes, X_sorted, X_features, y, sample_weights
