@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='XGBoost-Ranking',
-    version='0.7.0',
+    version='0.7.1',
     packages=['xgboostextension'],
     author='bigdong89',
     author_email='dongjiaquan89@gmail.com',
