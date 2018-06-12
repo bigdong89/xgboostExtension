@@ -14,5 +14,6 @@ setup(
         'scikit-learn>=0.19.0',
         'numpy>=1.14.0'
     ],
-    setup_requires=[]
+    setup_requires=[],
+    include_package_data=True
 )
