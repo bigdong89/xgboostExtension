@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='XGBoost-Ranking',
     version='0.7.1',
-    packages=['xgboostextension'],
+    packages=find_packages(),
     author='bigdong89',
     author_email='dongjiaquan89@gmail.com',
     url='https://github.com/bigdong89/xgboostExtension',
