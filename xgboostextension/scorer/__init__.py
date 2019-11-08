@@ -28,7 +28,7 @@ class RankingScorer(_BaseScorer):
         self._ungrouped_score_func = score_func
 
     def __call__(self, estimator, X, y, sample_weight=None):
-        sizes, X_sorted, _, y_sorted, _ = _preprare_data_in_groups(X, y)
+        sizes, X_sorted, _, y_sorted, _ = _preprare_data_in_groups(X, y, dtype=None)
 
         y_predicted = estimator.predict(X_sorted)
 
