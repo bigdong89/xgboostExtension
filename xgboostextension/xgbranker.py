@@ -8,20 +8,35 @@ from sklearn.utils import check_X_y, check_array
 class XGBRanker(XGBModel):
     __doc__ = """Implementation of sklearn API for XGBoost Ranking
            """ + '\n'.join(XGBModel.__doc__.split('\n')[2:])
-    
-    def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100, 
+
+    def __init__(self, max_depth=3, learning_rate=0.1, n_estimators=100,
                  silent=True, objective="rank:pairwise", booster='gbtree',
                  n_jobs=-1, nthread=None, gamma=0, min_child_weight=1, max_delta_step=0,
                  subsample=1, colsample_bytree=1, colsample_bylevel=1,
                  reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
-                 base_score=0.5, random_state=0, seed=None, missing=None, **kwargs): 
-        
-        super(XGBRanker, self).__init__(max_depth, learning_rate,
-                                        n_estimators, silent, objective, booster,
-                                        n_jobs, nthread, gamma, min_child_weight, max_delta_step, 
-                                        subsample, colsample_bytree, colsample_bylevel,
-                                        reg_alpha, reg_lambda, scale_pos_weight,
-                                        base_score, random_state, seed, missing)
+                 base_score=0.5, random_state=0, seed=None, missing=None, **kwargs):
+
+        super(XGBRanker, self).__init__(max_depth=max_depth,
+                                        learning_rate=learning_rate,
+                                        n_estimators=n_estimators,
+                                        silent=silent,
+                                        objective=objective,
+                                        booster=booster,
+                                        n_jobs=n_jobs,
+                                        nthread=nthread,
+                                        gamma=gamma,
+                                        min_child_weight=min_child_weight,
+                                        max_delta_step=max_delta_step,
+                                        subsample=subsample,
+                                        colsample_bytree=colsample_bytree,
+                                        colsample_bylevel=colsample_bylevel,
+                                        reg_alpha=reg_alpha,
+                                        reg_lambda=reg_lambda,
+                                        scale_pos_weight=scale_pos_weight,
+                                        base_score=base_score,
+                                        random_state=random_state,
+                                        seed=seed,
+                                        missing=missing)
 
     def fit(self, X, y, sample_weight=None, eval_set=None, eval_metric=None,
             early_stopping_rounds=None, verbose=True, xgb_model=None):
@@ -95,7 +110,7 @@ class XGBRanker(XGBModel):
 
         train_dmatrix.set_group(sizes)
 
-        self._Booster = train(params, train_dmatrix, 
+        self._Booster = train(params, train_dmatrix,
                               self.n_estimators,
                               early_stopping_rounds=early_stopping_rounds,
                               evals_result=evals_result, obj=obj, feval=feval,
@@ -122,5 +137,3 @@ class XGBRanker(XGBModel):
                                                  output_margin=output_margin,
                                                  ntree_limit=ntree_limit)
         return rank_values
-
-    
